@@ -6,41 +6,47 @@ async function loadData() {
   const response = await fetch(`${API}/metrics`);
   const data = await response.json();
 
-  const channels = [...new Set(data.map((d) => d.channel_name))];
-
-  const list = document.getElementById("channel-list");
-
-  channels.forEach((name) => {
-    const li = document.createElement("li");
-    li.className = "list-group-item";
-    li.textContent = name;
-
-    li.onclick = () => renderChart(name, data);
-
-    list.appendChild(li);
-  });
+  renderChart(data);
 }
 
-function renderChart(channel, data) {
+function renderChart(data) {
   if (chart) {
     chart.destroy();
   }
 
-  const filtered = data.filter((d) => d.channel_name === channel);
+  const channels = [...new Set(data.map((d) => d.channel_name))];
 
-  const labels = filtered.map((d) => d.timestamp);
-  const subs = filtered.map((d) => d.subscribers);
+  const datasets = channels.map((channel) => {
+    const filtered = data
+      .filter((d) => d.channel_name === channel)
+      .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+
+    return {
+      label: channel,
+      data: filtered.map((d) => d.subscribers),
+      borderWidth: 2,
+      fill: false,
+    };
+  });
+
+  const labels = data
+    .filter((d) => d.channel_name === channels[0])
+    .map((d) => d.timestamp);
 
   chart = new Chart(document.getElementById("subsChart"), {
     type: "line",
     data: {
       labels: labels,
-      datasets: [
-        {
-          label: channel + " Subscribers",
-          data: subs,
+      datasets: datasets,
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        title: {
+          display: true,
+          text: "Channel Subscribers Over Time",
         },
-      ],
+      },
     },
   });
 }
