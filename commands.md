@@ -1,3 +1,5 @@
+Site: https://youtu.be/6sfiAyKy8Jo?si=LcbBSNzdR7XE0G1q
+
 tree -I ".venv"
 pip freeze > requirements.txt
 
@@ -23,3 +25,12 @@ COMMAND PID USER FD TYPE DEVICE SIZE/OFF NODE NAME
 uvicorn 23633 codespace 3u IPv4 1051467 0t0 TCP localhost:8000 (LISTEN)
 
 kill -9 23633
+
+find . -type d -name "**pycache**" -exec rm -r {} +
+find . -type f -name "\*.pyc" -delete
+
+USING FASTAPI:
+uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload
+
+CURL:
+curl http://127.0.0.1:8000/collect

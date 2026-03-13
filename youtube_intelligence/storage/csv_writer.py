@@ -21,7 +21,7 @@ HEADERS = [
 
 def save_metrics(rows):
 
-    DATA_FILE.parent.mkdir(exist_ok=True)
+    DATA_FILE.parent.mkdir(parents=True, exist_ok=True)
 
     file_exists = DATA_FILE.exists()
 
